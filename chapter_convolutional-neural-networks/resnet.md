@@ -9,7 +9,7 @@
 
 ![设输入为$\boldsymbol{x}$。假设图中最上方激活函数输入的理想映射为$f(\boldsymbol{x})$。左图虚线框中的部分需要直接拟合出该映射$f(\boldsymbol{x})$，而右图虚线框中的部分需要拟合出有关恒等映射的残差映射$f(\boldsymbol{x})-\boldsymbol{x}$](../img/residual-block.svg)
 
-ResNet沿用了VGG全$3\times 3$卷积层的设计。残差块里首先有2个有相同输出通道数的$3\times 3$卷积层。每个卷积层后接一个批量归一化层和ReLU激活函数。然后我们将输入跳过这两个卷积运算后直接加在最后的ReLU激活函数前。这样的设计要求两个卷积层的输出与输入形状一样，从而可以相加。如果想改变通道数，就需要引入一个额外的$1\times 1$卷积层来将输入变换成需要的形状后再做相加运算。
+ResNet沿用了VGG全$3\times 3$卷积层的设计。残差块里首先有2个有相同输出通道数的$3\times 3$卷积层。每个卷积层后接一个批量归一化层和ReLU激活函数。然后我们将输入跳过这2个卷积运算后直接加在最后的ReLU激活函数前。这样的设计要求2个卷积层的输出与输入形状一样，从而可以相加。如果想改变通道数，就需要引入一个额外的$1\times 1$卷积层来将输入变换成需要的形状后再做相加运算。
 
 残差块的实现如下。它可以设定输出通道数、是否使用额外的$1\times 1$卷积层来修改通道数以及卷积层的步幅。
 
@@ -83,7 +83,7 @@ def resnet_block(num_channels, num_residuals, first_block=False):
     return blk
 ```
 
-接着我们为ResNet加入所有残差块。这里每个模块使用两个残差块。
+接着我们为ResNet加入所有残差块。这里每个模块使用2个残差块。
 
 ```{.python .input  n=5}
 net.add(resnet_block(64, 2, first_block=True),
@@ -110,7 +110,7 @@ for layer in net:
     print(layer.name, 'output shape:\t', X.shape)
 ```
 
-## 获取数据和训练模型
+## 训练模型
 
 下面我们在Fashion-MNIST数据集上训练ResNet。
 

@@ -91,7 +91,7 @@ $$
 \end{bmatrix}.
 $$
 
-我们使用符号$\odot$表示两个矩阵按元素做乘法的运算：
+我们使用符号$\odot$表示两个矩阵按元素乘法的运算，即阿达玛（Hadamard）积：
 
 $$
 \boldsymbol{A} \odot \boldsymbol{B} = 
@@ -283,7 +283,7 @@ $$
 \end{bmatrix},
 $$
 
-其中二阶偏导数
+其中二阶偏导数为
 
 $$\frac{\partial^2 f}{\partial x_i \partial x_j} = \frac{\partial }{\partial x_j} \left(\frac{\partial f}{ \partial x_i}\right).$$
 
@@ -327,7 +327,7 @@ $$E(X) = \sum_{x} x P(X = x).$$
 
 ## 小结
 
-* 本节总结了本书中涉及的有关线性代数、微分和概率的基础知识。
+* 本附录总结了本书中涉及的有关线性代数、微分和概率的基础知识。
 
 
 ## 练习

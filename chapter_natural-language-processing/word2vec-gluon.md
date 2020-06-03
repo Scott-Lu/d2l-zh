@@ -1,7 +1,7 @@
 # word2vec的实现
 
 
-本节是对前两节内容的实践。我们以[“词嵌入（word2vec）”](word2vec.md)一节中的跳字模型和[“近似训练”](approx-training.md)一节中的负采样为例，介绍在语料库上训练词嵌入模型的实现。我们还会介绍一些实现中的技巧，如二次采样（subsampling）。
+本节是对前两节内容的实践。我们以[“词嵌入（word2vec）”](word2vec.md)一节中的跳字模型和[“近似训练”](approx-training.md)一节中的负采样为例，介绍在语料库上训练词嵌入模型的实现。我们还会介绍一些实现中的技巧，如二次采样。
 
 首先导入实验所需的包或模块。
 
@@ -17,7 +17,7 @@ import time
 import zipfile
 ```
 
-## 处理数据集
+## 预处理数据集
 
 PTB（Penn Tree Bank）是一个常用的小型语料库 [1]。它采样自《华尔街日报》的文章，包括训练集、验证集和测试集。我们将在PTB训练集上训练词嵌入模型。该数据集的每一行作为一个句子。句子中的每个词由空格隔开。
 
@@ -63,7 +63,7 @@ num_tokens = sum([len(st) for st in dataset])
 
 ### 二次采样
 
-文本数据中一般会出现一些高频词，如英文中的“the”“a”和“in”。通常来说，在一个背景窗口中，一个词（如“chip”）和较低频词（如“microprocessor”）同时出现比和较高频词（如“the”）同时出现对训练词嵌入模型更有益。因此，训练词嵌入模型时可以对词进行二次采样 [2]。
+文本数据中一般会出现一些高频词，如英文中的“the”“a”和“in”。通常来说，在一个背景窗口中，一个词（如“chip”）和较低频词（如“microprocessor”）同时出现比和较高频词（如“the”）同时出现对训练词嵌入模型更有益。因此，训练词嵌入模型时可以对词进行二次采样（subsampling） [2]。
 具体来说，数据集中每个被索引词$w_i$将有一定概率被丢弃，该丢弃概率为
 
 $$ P(w_i) = \max\left(1 - \sqrt{\frac{t}{f(w_i)}}, 0\right),$$ 
@@ -158,7 +158,7 @@ sampling_weights = [counter[w]**0.75 for w in idx_to_token]
 all_negatives = get_negatives(all_contexts, sampling_weights, 5)
 ```
 
-## 读取数据
+## 读取数据集
 
 我们从数据集中提取所有中心词`all_centers`，以及每个中心词对应的背景词`all_contexts`和噪声词`all_negatives`。我们将通过随机小批量来读取它们。
 
@@ -218,7 +218,7 @@ embed(x)
 
 ### 小批量乘法
 
-我们可以使用小批量乘法运算`batch_dot`对两个小批量中的矩阵一一做乘法。假设第一个小批量中包含$n$个形状为$a\times b$的矩阵$\boldsymbol{X}_1, \ldots, \boldsymbol{X}_n$，第二个小批量中包含$n$个形状为$b\times c$的矩阵$\boldsymbol{Y}_1, \ldots, \boldsymbol{Y}_n$。这两个小批量的矩阵乘法输出为$n$个形状为$a\times c$的矩阵$\boldsymbol{X}_1\boldsymbol{Y}_1, \ldots, \boldsymbol{X}_n\boldsymbol{Y}_n$。因此，给定两个形状分别为($n$, $a$, $b$)和($n$, $b$, $c$)的`NDArray`，小批量乘法输出的形状为($n$, $a$, $c$)。
+我们可以使用小批量乘法运算`batch_dot`对两个小批量中的矩阵一一做乘法。假设第一个小批量包含$n$个形状为$a\times b$的矩阵$\boldsymbol{X}_1, \ldots, \boldsymbol{X}_n$，第二个小批量包含$n$个形状为$b\times c$的矩阵$\boldsymbol{Y}_1, \ldots, \boldsymbol{Y}_n$。这两个小批量的矩阵乘法输出为$n$个形状为$a\times c$的矩阵$\boldsymbol{X}_1\boldsymbol{Y}_1, \ldots, \boldsymbol{X}_n\boldsymbol{Y}_n$。因此，给定两个形状分别为($n$, $a$, $b$)和($n$, $b$, $c$)的`NDArray`，小批量乘法输出的形状为($n$, $a$, $c$)。
 
 ```{.python .input  n=17}
 X = nd.ones((2, 1, 4))
